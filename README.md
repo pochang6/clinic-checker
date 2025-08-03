@@ -1,7 +1,5 @@
 仕様書（v0.4）
 ---
-
-````markdown
 # Clinic Checker (Android App)
 
 ## 🛡️ Development Safety & Security Guidelines
