@@ -27,12 +27,13 @@ This Android app logs into a clinic reservation page, scrapes the current consul
 
 ### 🔐 Login
 - URL: `https://ssc10.doctorqube.com/miyatanaika-clinic/input.cgi?vMode=mode_bookConf&Stamp=154822`
+- Login credentials configurable via settings screen
 - POST Parameters:
-  - `login_id`: `"004241"`
-  - `password`: `"0206"`  
-  **[Note: Use environment variable injection or obfuscation; do not hardcode secrets in source]**
+  - `login_id`: User-configured clinic ID
+  - `password`: User-configured password
 - Session timeout: ~15 minutes
 - Auto re-login when session expires
+- Error handling: 3 retries with 10-second intervals, then show error dialog
 
 ### 🔎 Scraping
 - Targets:
@@ -42,13 +43,15 @@ This Android app logs into a clinic reservation page, scrapes the current consul
 - Requires periodic page refresh or re-request
 
 ### 🔁 Polling
-- User-defined interval (e.g., 60s, 120s)
+- Default interval: 60 seconds
+- User-defined interval (configurable in settings)
 - Uses OkHttp with persistent cookies for session management
 
 ### 🔔 Notification
 - Triggers when `currentNumber >= (reservationNumber - notifyOffset)`
+- Default `notifyOffset`: 3
 - Notification methods:
-  - Text-to-Speech
+  - Text-to-Speech (Japanese: "診察番号が近づいています。これまでの流れからの予測ではxx時xx分頃、つまり何分後に呼ばれる見込みです")
   - Vibration
   - System Notification
 - Notification policy modes:
@@ -56,9 +59,18 @@ This Android app logs into a clinic reservation page, scrapes the current consul
   - Always notify
   - Notify only on number increment
 
+### 📊 Wait Time Prediction
+- Tracks consultation time for each patient from start to call
+- Calculates average consultation time
+- Predicts estimated call time based on current progress
+- Displays on main screen:
+  - Average consultation time per patient
+  - Estimated call time (HH:MM format)
+  - Time remaining until estimated call
+
 ### 🧪 Developer Mode
 - Manual override of reservation number
-- Toggleable from settings screen
+- Toggleable from settings screen (for testing purposes)
 
 ---
 

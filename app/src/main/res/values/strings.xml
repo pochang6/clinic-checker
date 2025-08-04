@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Clinic Checker</string>
+    
+    <!-- Main Screen -->
+    <string name="current_consultation_number">現在診察中の番号</string>
+    <string name="your_reservation_number">あなたの予約番号</string>
+    <string name="next_refresh_time">次回更新時刻</string>
+    <string name="refresh">更新</string>
+    <string name="settings">設定</string>
+    <string name="start_monitoring">監視開始</string>
+    <string name="stop_monitoring">監視停止</string>
+    
+    <!-- Wait Time Prediction -->
+    <string name="average_consultation_time">平均診察時間</string>
+    <string name="estimated_call_time">予測呼び出し時刻</string>
+    <string name="time_remaining">残り時間</string>
+    <string name="minutes">分</string>
+    
+    <!-- Settings -->
+    <string name="clinic_settings">クリニック設定</string>
+    <string name="clinic_id">クリニックID</string>
+    <string name="password">パスワード</string>
+    <string name="polling_interval">更新間隔（秒）</string>
+    <string name="notification_settings">通知設定</string>
+    <string name="notification_offset">通知オフセット（番号）</string>
+    <string name="enable_voice_notification">音声通知を有効にする</string>
+    <string name="enable_vibration">振動を有効にする</string>
+    <string name="enable_system_notification">システム通知を有効にする</string>
+    <string name="notification_policy">通知ポリシー</string>
+    <string name="no_notification">通知なし</string>
+    <string name="always_notify">常に通知</string>
+    <string name="notify_on_increment">番号増加時のみ通知</string>
+    
+    <!-- Developer Mode -->
+    <string name="developer_mode">開発者モード</string>
+    <string name="enable_developer_mode">開発者モードを有効にする</string>
+    <string name="manual_reservation_number">手動予約番号</string>
+    
+    <!-- Ads -->
+    <string name="remove_ads">広告を削除</string>
+    <string name="ads_removed">広告は削除されました</string>
+    <string name="purchase_ads_removal">広告削除を購入</string>
+    
+    <!-- Notifications -->
+    <string name="consultation_approaching">診察番号が近づいています</string>
+    <string name="predicted_call_time">これまでの流れからの予測では%1$s頃、つまり%2$d分後に呼ばれる見込みです</string>
+    
+    <!-- Errors -->
+    <string name="error_login_failed">ログインに失敗しました</string>
+    <string name="error_network">ネットワークエラーが発生しました</string>
+    <string name="error_parsing">データの解析に失敗しました</string>
+    <string name="retry">再試行</string>
+    <string name="cancel">キャンセル</string>
+    
+    <!-- Status -->
+    <string name="status_monitoring">監視中</string>
+    <string name="status_stopped">停止中</string>
+    <string name="status_connecting">接続中</string>
+</resources> 
