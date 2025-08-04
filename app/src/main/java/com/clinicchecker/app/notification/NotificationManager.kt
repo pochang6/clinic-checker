@@ -16,7 +16,8 @@ import java.util.*
 class ClinicNotificationManager(private val context: Context) {
     private var textToSpeech: TextToSpeech? = null
     private val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as Vibrator
+        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager
+        vibratorManager.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
         context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
