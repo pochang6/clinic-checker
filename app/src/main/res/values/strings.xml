@@ -36,6 +36,8 @@
     <string name="developer_mode">開発者モード</string>
     <string name="enable_developer_mode">開発者モードを有効にする</string>
     <string name="manual_reservation_number">手動予約番号</string>
+    <string name="mock_data_settings">モックデータ設定</string>
+    <string name="developer_mode_description">※ 開発者モードでは実際のサーバーに接続せず、仮のデータでテストできます。</string>
     
     <!-- Ads -->
     <string name="remove_ads">広告を削除</string>

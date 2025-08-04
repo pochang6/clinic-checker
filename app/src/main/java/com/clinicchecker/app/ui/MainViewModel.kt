@@ -79,7 +79,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             
             // Initial login
-            val loginResult = repository.login(credentials)
+            val loginResult = repository.login(credentials, _uiState.value.developerMode)
             if (loginResult.isSuccess) {
                 fetchAndUpdateData()
                 startPolling()
@@ -119,7 +119,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     private suspend fun fetchAndUpdateData() {
         val result = repository.retryWithBackoff {
-            repository.fetchClinicData()
+            repository.fetchClinicData(_uiState.value.developerMode)
         }
         
         if (result.isSuccess) {

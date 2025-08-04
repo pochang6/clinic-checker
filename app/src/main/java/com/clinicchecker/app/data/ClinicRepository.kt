@@ -10,6 +10,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.net.CookieManager
 import java.net.CookiePolicy
+import kotlin.random.Random
 
 class ClinicRepository {
     private val client = OkHttpClient.Builder()
@@ -19,8 +20,18 @@ class ClinicRepository {
         .build()
 
     private val baseUrl = "https://ssc10.doctorqube.com/miyatanaika-clinic/input.cgi"
+    
+    // モック用の状態管理
+    private var mockCurrentNumber = 15
+    private var mockReservationNumber = 25
+    private var mockIncrementCounter = 0
 
-    suspend fun login(credentials: ClinicCredentials): Result<Boolean> = withContext(Dispatchers.IO) {
+    suspend fun login(credentials: ClinicCredentials, isDeveloperMode: Boolean = false): Result<Boolean> = withContext(Dispatchers.IO) {
+        if (isDeveloperMode) {
+            Log.d("ClinicRepository", "Developer mode: Mock login successful")
+            return@withContext Result.success(true)
+        }
+        
         try {
             val formBody = FormBody.Builder()
                 .add("login_id", credentials.clinicId)
@@ -53,7 +64,11 @@ class ClinicRepository {
         }
     }
 
-    suspend fun fetchClinicData(): Result<ClinicData> = withContext(Dispatchers.IO) {
+    suspend fun fetchClinicData(isDeveloperMode: Boolean = false): Result<ClinicData> = withContext(Dispatchers.IO) {
+        if (isDeveloperMode) {
+            return@withContext generateMockData()
+        }
+        
         try {
             val request = Request.Builder()
                 .url("$baseUrl?vMode=mode_bookConf&Stamp=154822")
@@ -78,6 +93,38 @@ class ClinicRepository {
             Log.e("ClinicRepository", "Fetch error", e)
             Result.failure(e)
         }
+    }
+
+    private fun generateMockData(): Result<ClinicData> {
+        // モックデータを生成（現実的なシナリオ）
+        mockIncrementCounter++
+        
+        // 10回に1回程度で現在番号が進む
+        if (mockIncrementCounter % 10 == 0) {
+            mockCurrentNumber += Random.nextInt(1, 3) // 1-2番進む
+        }
+        
+        // 予約番号は固定（設定画面で変更可能）
+        
+        val clinicData = ClinicData(
+            currentNumber = mockCurrentNumber,
+            reservationNumber = mockReservationNumber,
+            lastUpdateTime = System.currentTimeMillis()
+        )
+        
+        Log.d("ClinicRepository", "Generated mock data: current=$mockCurrentNumber, reservation=$mockReservationNumber")
+        return Result.success(clinicData)
+    }
+    
+    // 開発者モード用の設定関数
+    fun setMockReservationNumber(number: Int) {
+        mockReservationNumber = number
+        Log.d("ClinicRepository", "Mock reservation number set to: $number")
+    }
+    
+    fun setMockCurrentNumber(number: Int) {
+        mockCurrentNumber = number
+        Log.d("ClinicRepository", "Mock current number set to: $number")
     }
 
     private fun parseClinicData(doc: Document): ClinicData {
