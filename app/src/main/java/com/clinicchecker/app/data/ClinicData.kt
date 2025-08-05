@@ -11,7 +11,8 @@ data class ClinicData(
     val estimatedCallTime: String = "",
     val timeRemaining: Long = 0, // in minutes
     val lastUpdateTime: Long = 0,
-    val isMonitoring: Boolean = false
+    val isMonitoring: Boolean = false,
+    val hasReservation: Boolean = false
 ) : Parcelable
 
 @Parcelize

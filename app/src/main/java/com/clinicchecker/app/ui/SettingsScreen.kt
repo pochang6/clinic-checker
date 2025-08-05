@@ -30,6 +30,7 @@ fun SettingsScreen(
     onNotificationPolicyChange: (NotificationPolicy) -> Unit,
     onDeveloperModeChange: (Boolean) -> Unit,
     onManualReservationNumberChange: (Int) -> Unit,
+    onMockHasReservationChange: (Boolean) -> Unit,
     onAdsRemovedChange: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -198,6 +199,19 @@ fun SettingsScreen(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = uiState.mockHasReservation,
+                            onCheckedChange = onMockHasReservationChange
+                        )
+                        Text(stringResource(R.string.mock_has_reservation))
+                    }
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     

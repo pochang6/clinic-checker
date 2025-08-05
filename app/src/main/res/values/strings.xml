@@ -37,6 +37,7 @@
     <string name="enable_developer_mode">開発者モードを有効にする</string>
     <string name="manual_reservation_number">手動予約番号</string>
     <string name="mock_data_settings">モックデータ設定</string>
+    <string name="mock_has_reservation">予約あり（モック）</string>
     <string name="developer_mode_description">※ 開発者モードでは実際のサーバーに接続せず、仮のデータでテストできます。</string>
     
     <!-- Ads -->
@@ -59,4 +60,5 @@
     <string name="status_monitoring">監視中</string>
     <string name="status_stopped">停止中</string>
     <string name="status_connecting">接続中</string>
+    <string name="no_reservation_message">現在ご予約はありません。整理券を受け取ってから監視を開始してください。</string>
 </resources> 

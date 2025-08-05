@@ -76,6 +76,7 @@ fun ClinicCheckerApp() {
                 onNotificationPolicyChange = { settingsViewModel.updateNotificationPolicy(it) },
                 onDeveloperModeChange = { settingsViewModel.updateDeveloperMode(it) },
                 onManualReservationNumberChange = { settingsViewModel.updateManualReservationNumber(it) },
+                onMockHasReservationChange = { settingsViewModel.updateMockHasReservation(it) },
                 onAdsRemovedChange = { settingsViewModel.updateAdsRemoved(it) },
                 onBackClick = { navController.popBackStack() }
             )

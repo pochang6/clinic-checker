@@ -61,6 +61,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.value = _uiState.value.copy(consultationRecords = records)
             }
         }
+        viewModelScope.launch {
+            dataStore.mockHasReservation.collect { hasReservation ->
+                _uiState.value = _uiState.value.copy(mockHasReservation = hasReservation)
+                // Update repository mock settings
+                repository.setMockHasReservation(hasReservation)
+            }
+        }
     }
     
     fun startMonitoring() {
@@ -222,6 +229,7 @@ data class MainUiState(
     val notificationSettings: NotificationSettings = NotificationSettings(),
     val developerMode: Boolean = false,
     val manualReservationNumber: Int = 0,
+    val mockHasReservation: Boolean = true,
     val adsRemoved: Boolean = false,
     val consultationRecords: List<ConsultationRecord> = emptyList(),
     val isMonitoring: Boolean = false,

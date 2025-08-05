@@ -85,26 +85,55 @@ fun MainScreen(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    // Current consultation number
-                    InfoRow(
-                        label = stringResource(R.string.current_consultation_number),
-                        value = uiState.clinicData.currentNumber.toString(),
-                        icon = Icons.Default.Person
-                    )
+                    // Check if user has reservation
+                    if (!uiState.clinicData.hasReservation) {
+                        // No reservation state
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Info,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = stringResource(R.string.no_reservation_message),
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    } else {
+                        // Has reservation - show normal information
+                        // Current consultation number
+                        InfoRow(
+                            label = stringResource(R.string.current_consultation_number),
+                            value = uiState.clinicData.currentNumber.toString(),
+                            icon = Icons.Default.Person
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Reservation number
+                        InfoRow(
+                            label = stringResource(R.string.your_reservation_number),
+                            value = uiState.clinicData.reservationNumber.toString(),
+                            icon = Icons.Default.Assignment
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Reservation number
-                    InfoRow(
-                        label = stringResource(R.string.your_reservation_number),
-                        value = uiState.clinicData.reservationNumber.toString(),
-                        icon = Icons.Default.Assignment
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Wait time prediction
-                    if (uiState.clinicData.averageConsultationTime > 0) {
+                    // Wait time prediction (only show if user has reservation)
+                    if (uiState.clinicData.hasReservation && uiState.clinicData.averageConsultationTime > 0) {
                         InfoRow(
                             label = stringResource(R.string.average_consultation_time),
                             value = "${uiState.clinicData.averageConsultationTime}${stringResource(R.string.minutes)}",

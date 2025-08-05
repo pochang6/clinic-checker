@@ -45,6 +45,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 _uiState.value = _uiState.value.copy(adsRemoved = removed)
             }
         }
+        viewModelScope.launch {
+            dataStore.mockHasReservation.collect { hasReservation ->
+                _uiState.value = _uiState.value.copy(mockHasReservation = hasReservation)
+            }
+        }
     }
     
     fun updateClinicId(clinicId: String) {
@@ -133,6 +138,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dataStore.saveAdsRemoved(removed)
         }
     }
+    
+    fun updateMockHasReservation(hasReservation: Boolean) {
+        viewModelScope.launch {
+            dataStore.saveMockHasReservation(hasReservation)
+        }
+    }
 }
 
 data class SettingsUiState(
@@ -141,5 +152,6 @@ data class SettingsUiState(
     val notificationSettings: NotificationSettings = NotificationSettings(),
     val developerMode: Boolean = false,
     val manualReservationNumber: Int = 0,
+    val mockHasReservation: Boolean = true,
     val adsRemoved: Boolean = false
 ) 

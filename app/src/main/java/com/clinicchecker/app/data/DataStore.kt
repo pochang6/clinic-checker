@@ -28,6 +28,7 @@ class ClinicDataStore(private val context: Context) {
     // Developer mode
     private val DEVELOPER_MODE = booleanPreferencesKey("developer_mode")
     private val MANUAL_RESERVATION_NUMBER = intPreferencesKey("manual_reservation_number")
+    private val MOCK_HAS_RESERVATION = booleanPreferencesKey("mock_has_reservation")
 
     // Ads
     private val ADS_REMOVED = booleanPreferencesKey("ads_removed")
@@ -68,6 +69,10 @@ class ClinicDataStore(private val context: Context) {
         preferences[MANUAL_RESERVATION_NUMBER] ?: 0
     }
 
+    val mockHasReservation: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[MOCK_HAS_RESERVATION] ?: true
+    }
+
     val adsRemoved: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[ADS_REMOVED] ?: false
     }
@@ -104,6 +109,12 @@ class ClinicDataStore(private val context: Context) {
     suspend fun saveManualReservationNumber(number: Int) {
         context.dataStore.edit { preferences ->
             preferences[MANUAL_RESERVATION_NUMBER] = number
+        }
+    }
+
+    suspend fun saveMockHasReservation(hasReservation: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[MOCK_HAS_RESERVATION] = hasReservation
         }
     }
 
