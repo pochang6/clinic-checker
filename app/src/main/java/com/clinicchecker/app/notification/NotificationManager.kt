@@ -60,8 +60,13 @@ class ClinicNotificationManager(private val context: Context) {
             minutesRemaining
         )
 
-        if (settings.enableVoice) {
-            speakNotification(message)
+        // 常に電子音を鳴らす（番号が進んだことを示す）
+        playBeepSound()
+
+        // 指定番号分前になったら音声メッセージ
+        val difference = reservationNumber - currentNumber
+        if (difference <= settings.offset && settings.enableVoice) {
+            speakApproachMessage(difference)
         }
 
         if (settings.enableVibration) {
@@ -70,6 +75,38 @@ class ClinicNotificationManager(private val context: Context) {
 
         if (settings.enableSystemNotification) {
             showSystemNotification(message)
+        }
+    }
+
+    private fun playBeepSound() {
+        // 電子音を鳴らす（番号が進んだことを示す）
+        try {
+            val toneGenerator = android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 100)
+            toneGenerator.startTone(android.media.ToneGenerator.TONE_PROP_BEEP, 200)
+            toneGenerator.release()
+        } catch (e: Exception) {
+            android.util.Log.e("NotificationManager", "Failed to play beep sound", e)
+        }
+    }
+
+    private fun speakApproachMessage(difference: Int) {
+        textToSpeech?.let { tts ->
+            val message = if (difference <= 0) {
+                "クリニックに向かってください。あなたの番号が呼ばれています。"
+            } else {
+                "クリニックに向かってください。${difference}番前になりました。"
+            }
+            
+            android.util.Log.d("NotificationManager", "Speaking approach message: $message")
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "clinic_approach")
+            } else {
+                @Suppress("DEPRECATION")
+                tts.speak(message, TextToSpeech.QUEUE_FLUSH, null)
+            }
+        } ?: run {
+            android.util.Log.e("NotificationManager", "TextToSpeech is null")
         }
     }
 

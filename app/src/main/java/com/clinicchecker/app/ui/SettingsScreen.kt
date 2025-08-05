@@ -88,7 +88,9 @@ fun SettingsScreen(
                 OutlinedTextField(
                     value = uiState.pollingInterval.toString(),
                     onValueChange = { value ->
-                        value.toIntOrNull()?.let { onPollingIntervalChange(it) }
+                        if (value.isEmpty() || value.toIntOrNull() != null) {
+                            onPollingIntervalChange(value.toIntOrNull() ?: 0)
+                        }
                     },
                     label = { Text(stringResource(R.string.polling_interval)) },
                     modifier = Modifier.fillMaxWidth(),
@@ -102,7 +104,9 @@ fun SettingsScreen(
                 OutlinedTextField(
                     value = uiState.notificationSettings.offset.toString(),
                     onValueChange = { value ->
-                        value.toIntOrNull()?.let { onNotificationOffsetChange(it) }
+                        if (value.isEmpty() || value.toIntOrNull() != null) {
+                            onNotificationOffsetChange(value.toIntOrNull() ?: 0)
+                        }
                     },
                     label = { Text(stringResource(R.string.notification_offset)) },
                     modifier = Modifier.fillMaxWidth(),
@@ -201,7 +205,9 @@ fun SettingsScreen(
                     OutlinedTextField(
                         value = uiState.manualReservationNumber.toString(),
                         onValueChange = { value ->
-                            value.toIntOrNull()?.let { onManualReservationNumberChange(it) }
+                            if (value.isEmpty() || value.toIntOrNull() != null) {
+                                onManualReservationNumberChange(value.toIntOrNull() ?: 0)
+                            }
                         },
                         label = { Text(stringResource(R.string.manual_reservation_number)) },
                         modifier = Modifier.fillMaxWidth(),

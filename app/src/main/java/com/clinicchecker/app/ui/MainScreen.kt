@@ -168,13 +168,23 @@ fun MainScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Next refresh time
+                    // Next refresh time and predicted consultation time
                     if (uiState.isMonitoring) {
                         InfoRow(
                             label = stringResource(R.string.next_refresh_time),
                             value = uiState.nextRefreshTime,
                             icon = Icons.Default.Refresh
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        if (uiState.clinicData.averageConsultationTime > 0) {
+                            InfoRow(
+                                label = stringResource(R.string.predicted_consultation_time),
+                                value = "${uiState.clinicData.averageConsultationTime}${stringResource(R.string.minutes)}",
+                                icon = Icons.Default.Timer
+                            )
+                        }
                     }
                 }
             }

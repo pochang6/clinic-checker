@@ -7,13 +7,22 @@ import java.util.*
 class WaitTimePredictor {
     
     fun calculateAverageConsultationTime(records: List<ConsultationRecord>): Long {
-        if (records.isEmpty()) return 0
+        if (records.isEmpty()) return 5 // 初期値として5分を返す
         
         val completedRecords = records.filter { it.duration != null }
-        if (completedRecords.isEmpty()) return 0
+        if (completedRecords.isEmpty()) return 5 // 初期値として5分を返す
         
-        val totalDuration = completedRecords.sumOf { it.duration!! }
-        return totalDuration / completedRecords.size
+        // 3名分以上のデータがある場合のみ最大・最小値を除外
+        if (completedRecords.size >= 3) {
+            val sortedDurations = completedRecords.map { it.duration!! }.sorted()
+            val durationsWithoutExtremes = sortedDurations.drop(1).dropLast(1) // 最大・最小値を除外
+            val totalDuration = durationsWithoutExtremes.sum()
+            return totalDuration / durationsWithoutExtremes.size
+        } else {
+            // 3名未満の場合は通常の平均
+            val totalDuration = completedRecords.sumOf { it.duration!! }
+            return totalDuration / completedRecords.size
+        }
     }
     
     fun predictCallTime(

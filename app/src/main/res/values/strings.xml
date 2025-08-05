@@ -13,6 +13,7 @@
     
     <!-- Wait Time Prediction -->
     <string name="average_consultation_time">平均診察時間</string>
+    <string name="predicted_consultation_time">予測診察時間</string>
     <string name="estimated_call_time">予測呼び出し時刻</string>
     <string name="time_remaining">残り時間</string>
     <string name="minutes">分</string>
