@@ -238,7 +238,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 data class MainUiState(
-    val clinicData: ClinicData = ClinicData(),
+    val clinicData: ClinicData = ClinicData(averageConsultationTime = 5), // 初期値を5分に設定
     val credentials: ClinicCredentials = ClinicCredentials(),
     val pollingInterval: Int = 60,
     val notificationSettings: NotificationSettings = NotificationSettings(),

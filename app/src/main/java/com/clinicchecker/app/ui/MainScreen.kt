@@ -178,13 +178,12 @@ fun MainScreen(
                         
                         Spacer(modifier = Modifier.height(8.dp))
                         
-                        if (uiState.clinicData.averageConsultationTime > 0) {
-                            InfoRow(
-                                label = stringResource(R.string.predicted_consultation_time),
-                                value = "${uiState.clinicData.averageConsultationTime}${stringResource(R.string.minutes)}",
-                                icon = Icons.Default.Timer
-                            )
-                        }
+                        // 予測診察時間は常に表示（初期値5分）
+                        InfoRow(
+                            label = stringResource(R.string.predicted_consultation_time),
+                            value = "${uiState.clinicData.averageConsultationTime}${stringResource(R.string.minutes)}",
+                            icon = Icons.Default.Timer
+                        )
                     }
                 }
             }
