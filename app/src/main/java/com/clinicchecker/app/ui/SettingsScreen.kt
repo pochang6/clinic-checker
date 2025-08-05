@@ -59,7 +59,8 @@ fun SettingsScreen(
                     onValueChange = onClinicIdChange,
                     label = { Text(stringResource(R.string.clinic_id)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -70,6 +71,7 @@ fun SettingsScreen(
                     label = { Text(stringResource(R.string.password)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
                 )
             }

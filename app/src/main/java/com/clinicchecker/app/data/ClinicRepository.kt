@@ -26,6 +26,7 @@ class ClinicRepository {
     private var mockReservationNumber = 25
     private var mockIncrementCounter = 0
     private var mockHasReservation = true // 開発者モードで予約の有無を制御
+    private var mockLastUpdateTime = System.currentTimeMillis()
 
     suspend fun login(credentials: ClinicCredentials, isDeveloperMode: Boolean = false): Result<Boolean> = withContext(Dispatchers.IO) {
         if (isDeveloperMode) {
@@ -124,21 +125,28 @@ class ClinicRepository {
     private fun generateMockData(): Result<ClinicData> {
         // モックデータを生成（現実的なシナリオ）
         mockIncrementCounter++
+        val currentTime = System.currentTimeMillis()
         
         if (!mockHasReservation) {
             // 予約なし状態
             return Result.success(ClinicData(
                 currentNumber = 0,
                 reservationNumber = 0,
-                lastUpdateTime = System.currentTimeMillis(),
+                lastUpdateTime = currentTime,
                 hasReservation = false
             ))
         }
         
-        // 予約あり状態
-        // 10回に1回程度で現在番号が進む
-        if (mockIncrementCounter % 10 == 0) {
-            mockCurrentNumber += Random.nextInt(1, 3) // 1-2番進む
+        // 予約あり状態 - 20秒に1人診察が終わるシミュレーション
+        val timeDiff = currentTime - mockLastUpdateTime
+        val secondsPassed = timeDiff / 1000
+        
+        // 20秒ごとに1人診察が終わる
+        if (secondsPassed >= 20) {
+            val patientsCompleted = (secondsPassed / 20).toInt()
+            mockCurrentNumber += patientsCompleted
+            mockLastUpdateTime = currentTime - (secondsPassed % 20) * 1000
+            Log.d("ClinicRepository", "Mock: $patientsCompleted patients completed, current number: $mockCurrentNumber")
         }
         
         // 予約番号は固定（設定画面で変更可能）
@@ -146,7 +154,7 @@ class ClinicRepository {
         val clinicData = ClinicData(
             currentNumber = mockCurrentNumber,
             reservationNumber = mockReservationNumber,
-            lastUpdateTime = System.currentTimeMillis(),
+            lastUpdateTime = currentTime,
             hasReservation = true
         )
         

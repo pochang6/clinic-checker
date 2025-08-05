@@ -76,11 +76,20 @@ class ClinicNotificationManager(private val context: Context) {
     private fun speakNotification(message: String) {
         textToSpeech?.let { tts ->
             val fullMessage = "${context.getString(R.string.consultation_approaching)}。$message"
+            
+            // 開発者モード用の特別なメッセージ
+            val specialMessage = if (context.getSharedPreferences("clinic_checker_prefs", Context.MODE_PRIVATE)
+                .getBoolean("developer_mode", false)) {
+                "南蛮の人まで呼ばれています。$message"
+            } else {
+                fullMessage
+            }
+            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                tts.speak(fullMessage, TextToSpeech.QUEUE_FLUSH, null, "clinic_notification")
+                tts.speak(specialMessage, TextToSpeech.QUEUE_FLUSH, null, "clinic_notification")
             } else {
                 @Suppress("DEPRECATION")
-                tts.speak(fullMessage, TextToSpeech.QUEUE_FLUSH, null)
+                tts.speak(specialMessage, TextToSpeech.QUEUE_FLUSH, null)
             }
         }
     }

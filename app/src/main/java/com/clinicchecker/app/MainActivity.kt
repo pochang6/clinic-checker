@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
 import com.clinicchecker.app.ui.*
 import com.clinicchecker.app.ui.Typography
 
@@ -37,7 +38,10 @@ fun ClinicCheckerApp() {
     val mainViewModel: MainViewModel = viewModel()
     val settingsViewModel: SettingsViewModel = viewModel()
     
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(
+        navController = navController, 
+        startDestination = "main"
+    ) {
         composable("main") {
             val uiState by mainViewModel.uiState.collectAsState()
             

@@ -1,6 +1,7 @@
 package com.clinicchecker.app.ui
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.clinicchecker.app.data.*
@@ -178,6 +179,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 estimatedTime,
                 minutesRemaining.toInt()
             )
+        }
+        
+        // Auto-stop when called (current number >= reservation number)
+        if (currentNumber >= reservationNumber && reservationNumber > 0) {
+            Log.d("MainViewModel", "Patient called! Auto-stopping monitoring")
+            stopMonitoring()
         }
         
         // Update state
