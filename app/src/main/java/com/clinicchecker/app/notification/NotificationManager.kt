@@ -80,7 +80,7 @@ class ClinicNotificationManager(private val context: Context) {
             // 開発者モード用の特別なメッセージ
             val specialMessage = if (context.getSharedPreferences("clinic_checker_prefs", Context.MODE_PRIVATE)
                 .getBoolean("developer_mode", false)) {
-                "南蛮の人まで呼ばれています。$message"
+                "何番、つまり今診察中の人の番号まで呼ばれています。$message"
             } else {
                 fullMessage
             }
