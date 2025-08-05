@@ -71,24 +71,40 @@ class ClinicRepository {
         }
         
         try {
-            val request = Request.Builder()
+            // First, get the main page to check reservation status
+            val mainRequest = Request.Builder()
                 .url("$baseUrl?vMode=mode_bookConf&Stamp=154822")
                 .get()
                 .build()
 
-            val response = client.newCall(request).execute()
+            val mainResponse = client.newCall(mainRequest).execute()
             
-            if (response.isSuccessful) {
-                val body = response.body?.string()
-                if (body != null) {
-                    val doc = Jsoup.parse(body)
-                    val clinicData = parseClinicData(doc)
+            if (mainResponse.isSuccessful) {
+                val mainBody = mainResponse.body?.string()
+                if (mainBody != null) {
+                    val mainDoc = Jsoup.parse(mainBody)
+                    
+                    // Check if user has any reservation
+                    val noReservationText = mainDoc.select(".booklist.sub_section").firstOrNull()?.text()
+                    if (noReservationText?.contains("現在ご予約はありません") == true) {
+                        // No reservation - return default state
+                        return@withContext Result.success(ClinicData(
+                            currentNumber = 0,
+                            reservationNumber = 0,
+                            lastUpdateTime = System.currentTimeMillis(),
+                            hasReservation = false
+                        ))
+                    }
+                    
+                    // If user has reservation, parse the same page for consultation data
+                    // The consultation information might be on the same page or we need to navigate
+                    val clinicData = parseConsultationData(mainDoc)
                     Result.success(clinicData)
                 } else {
-                    Result.failure(Exception("Empty response body"))
+                    Result.failure(Exception("Empty main response body"))
                 }
             } else {
-                Result.failure(Exception("Failed to fetch data: ${response.code}"))
+                Result.failure(Exception("Failed to fetch main data: ${mainResponse.code}"))
             }
         } catch (e: Exception) {
             Log.e("ClinicRepository", "Fetch error", e)
@@ -100,6 +116,17 @@ class ClinicRepository {
         // モックデータを生成（現実的なシナリオ）
         mockIncrementCounter++
         
+        if (!mockHasReservation) {
+            // 予約なし状態
+            return Result.success(ClinicData(
+                currentNumber = 0,
+                reservationNumber = 0,
+                lastUpdateTime = System.currentTimeMillis(),
+                hasReservation = false
+            ))
+        }
+        
+        // 予約あり状態
         // 10回に1回程度で現在番号が進む
         if (mockIncrementCounter % 10 == 0) {
             mockCurrentNumber += Random.nextInt(1, 3) // 1-2番進む
@@ -111,7 +138,7 @@ class ClinicRepository {
             currentNumber = mockCurrentNumber,
             reservationNumber = mockReservationNumber,
             lastUpdateTime = System.currentTimeMillis(),
-            hasReservation = mockHasReservation
+            hasReservation = true
         )
         
         Log.d("ClinicRepository", "Generated mock data: current=$mockCurrentNumber, reservation=$mockReservationNumber, hasReservation=$mockHasReservation")
@@ -134,47 +161,92 @@ class ClinicRepository {
         Log.d("ClinicRepository", "Mock hasReservation set to: $hasReservation")
     }
 
-    private fun parseClinicData(doc: Document): ClinicData {
+    private fun parseConsultationData(doc: Document): ClinicData {
         var currentNumber = 0
         var reservationNumber = 0
-        var hasReservation = false
 
-        // Check if user has any reservation
-        val noReservationText = doc.select(".booklist.sub_section").firstOrNull()?.text()
-        if (noReservationText?.contains("現在ご予約はありません") == true) {
-            // No reservation - return default state
-            return ClinicData(
-                currentNumber = 0,
-                reservationNumber = 0,
-                lastUpdateTime = System.currentTimeMillis(),
-                hasReservation = false
-            )
-        }
+        // Log the entire document text for debugging
+        Log.d("ClinicRepository", "Document text: ${doc.text()}")
 
-        // If we reach here, user has a reservation
-        hasReservation = true
-
-        // Parse current consultation number from the consultation status page
-        // This would be from a different page (診療状況確認)
-        val currentNumberText = doc.select("text:contains(現在診察中の番号)").firstOrNull()?.text()
-        if (currentNumberText != null) {
+        // Parse current consultation number
+        // Look for text containing "現在" and "番の方まで診察中"
+        val currentNumberElements = doc.select("*:contains(現在), *:contains(番の方まで診察中)")
+        for (element in currentNumberElements) {
+            val text = element.text()
+            Log.d("ClinicRepository", "Checking element for current number: $text")
             val regex = Regex("現在(\\d+)番の方まで診察中")
-            val match = regex.find(currentNumberText)
-            currentNumber = match?.groupValues?.get(1)?.toIntOrNull() ?: 0
+            val match = regex.find(text)
+            if (match != null) {
+                currentNumber = match.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found current number: $currentNumber")
+                break
+            }
         }
 
-        // Parse reservation number from the consultation status page
-        val reservationElements = doc.select("text:contains(自分の予約番号)")
-        if (reservationElements.isNotEmpty()) {
-            // This is a placeholder - actual parsing logic depends on the real HTML structure
-            reservationNumber = 0
+        // Parse reservation number
+        // Look for text containing "あなたの予約番号" or similar
+        val reservationElements = doc.select("*:contains(あなたの予約番号), *:contains(予約番号)")
+        for (element in reservationElements) {
+            val text = element.text()
+            Log.d("ClinicRepository", "Checking element for reservation number: $text")
+            val regex = Regex("(\\d+)番")
+            val match = regex.find(text)
+            if (match != null) {
+                reservationNumber = match.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found reservation number: $reservationNumber")
+                break
+            }
+        }
+
+        // If we couldn't find the numbers, try alternative selectors
+        if (currentNumber == 0) {
+            // Try to find any number that might be the current consultation number
+            val allText = doc.text()
+            val currentRegex = Regex("現在.*?(\\d+).*?番.*?診察")
+            val currentMatch = currentRegex.find(allText)
+            if (currentMatch != null) {
+                currentNumber = currentMatch.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found current number (alternative): $currentNumber")
+            }
+        }
+
+        if (reservationNumber == 0) {
+            // Try to find any number that might be the reservation number
+            val allText = doc.text()
+            val reservationRegex = Regex("予約.*?(\\d+).*?番")
+            val reservationMatch = reservationRegex.find(allText)
+            if (reservationMatch != null) {
+                reservationNumber = reservationMatch.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found reservation number (alternative): $reservationNumber")
+            }
+        }
+
+        // If still no numbers found, try more generic patterns
+        if (currentNumber == 0) {
+            val allText = doc.text()
+            val genericCurrentRegex = Regex("(\\d+)番.*?診察")
+            val genericCurrentMatch = genericCurrentRegex.find(allText)
+            if (genericCurrentMatch != null) {
+                currentNumber = genericCurrentMatch.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found current number (generic): $currentNumber")
+            }
+        }
+
+        if (reservationNumber == 0) {
+            val allText = doc.text()
+            val genericReservationRegex = Regex("(\\d+)番.*?予約")
+            val genericReservationMatch = genericReservationRegex.find(allText)
+            if (genericReservationMatch != null) {
+                reservationNumber = genericReservationMatch.groupValues[1].toIntOrNull() ?: 0
+                Log.d("ClinicRepository", "Found reservation number (generic): $reservationNumber")
+            }
         }
 
         return ClinicData(
             currentNumber = currentNumber,
             reservationNumber = reservationNumber,
             lastUpdateTime = System.currentTimeMillis(),
-            hasReservation = hasReservation
+            hasReservation = true
         )
     }
 
