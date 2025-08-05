@@ -82,7 +82,11 @@ fun ClinicCheckerApp() {
                 onManualReservationNumberChange = { settingsViewModel.updateManualReservationNumber(it) },
                 onMockHasReservationChange = { settingsViewModel.updateMockHasReservation(it) },
                 onAdsRemovedChange = { settingsViewModel.updateAdsRemoved(it) },
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { 
+                    settingsViewModel.saveSettings()
+                    navController.popBackStack()
+                }
             )
         }
     }

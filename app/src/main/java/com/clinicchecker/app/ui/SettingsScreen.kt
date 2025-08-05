@@ -12,7 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.clinicchecker.app.R
 import com.clinicchecker.app.data.NotificationPolicy
 
@@ -32,7 +34,8 @@ fun SettingsScreen(
     onManualReservationNumberChange: (Int) -> Unit,
     onMockHasReservationChange: (Boolean) -> Unit,
     onAdsRemovedChange: (Boolean) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -41,6 +44,11 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onSaveClick) {
+                        Icon(Icons.Default.Save, contentDescription = "Save")
                     }
                 }
             )
@@ -71,8 +79,7 @@ fun SettingsScreen(
                     label = { Text(stringResource(R.string.password)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
 
@@ -245,6 +252,27 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            // Save Button
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+                onClick = onSaveClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.save_settings),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

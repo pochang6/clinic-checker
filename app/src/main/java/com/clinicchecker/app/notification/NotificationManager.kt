@@ -85,12 +85,17 @@ class ClinicNotificationManager(private val context: Context) {
                 fullMessage
             }
             
+            // デバッグログを追加
+            android.util.Log.d("NotificationManager", "Speaking: $specialMessage")
+            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 tts.speak(specialMessage, TextToSpeech.QUEUE_FLUSH, null, "clinic_notification")
             } else {
                 @Suppress("DEPRECATION")
                 tts.speak(specialMessage, TextToSpeech.QUEUE_FLUSH, null)
             }
+        } ?: run {
+            android.util.Log.e("NotificationManager", "TextToSpeech is null")
         }
     }
 

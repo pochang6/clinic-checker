@@ -61,4 +61,5 @@
     <string name="status_stopped">停止中</string>
     <string name="status_connecting">接続中</string>
     <string name="no_reservation_message">現在ご予約はありません。整理券を受け取ってから監視を開始してください。</string>
+    <string name="save_settings">設定を保存</string>
 </resources> 

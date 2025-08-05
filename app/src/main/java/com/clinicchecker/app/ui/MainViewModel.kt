@@ -166,12 +166,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
         
         // Check for notifications
-        if (notificationManager.shouldNotify(
-            currentState.notificationSettings,
-            currentNumber,
-            reservationNumber,
-            previousCurrentNumber
-        )) {
+        val shouldNotify = if (currentState.developerMode) {
+            // 開発者モードでは常に通知
+            true
+        } else {
+            notificationManager.shouldNotify(
+                currentState.notificationSettings,
+                currentNumber,
+                reservationNumber,
+                previousCurrentNumber
+            )
+        }
+        
+        if (shouldNotify) {
+            Log.d("MainViewModel", "Sending notification: current=$currentNumber, reservation=$reservationNumber")
             notificationManager.notifyConsultationApproaching(
                 currentState.notificationSettings,
                 currentNumber,

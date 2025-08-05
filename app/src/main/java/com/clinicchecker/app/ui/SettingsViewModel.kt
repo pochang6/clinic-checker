@@ -144,6 +144,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dataStore.saveMockHasReservation(hasReservation)
         }
     }
+    
+    fun saveSettings() {
+        // 設定は既にリアルタイムで保存されているので、
+        // このメソッドは主にUIのフィードバック用
+        viewModelScope.launch {
+            // 必要に応じて追加の保存処理をここに追加
+        }
+    }
 }
 
 data class SettingsUiState(
