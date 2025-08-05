@@ -35,12 +35,18 @@ class ClinicRepository {
         
         try {
             val formBody = FormBody.Builder()
-                .add("login_id", credentials.clinicId)
-                .add("password", credentials.password)
+                .add("Pno", credentials.clinicId)
+                .add("Ppass", credentials.password)
+                .add("vMode", "mode_bookConf")
+                .add("eLang", "")
+                .add("vSimple", "")
+                .add("Step", "1")
+                .add("gMailReg", "1")
+                .add("bOK", "OK")
                 .build()
 
             val request = Request.Builder()
-                .url("$baseUrl?vMode=mode_bookConf&Stamp=154822")
+                .url("https://ssc10.doctorqube.com/miyatanaika-clinic/dqw.cgi")
                 .post(formBody)
                 .build()
 
@@ -48,12 +54,15 @@ class ClinicRepository {
             
             if (response.isSuccessful) {
                 val body = response.body?.string()
-                if (body != null && body.contains("ログイン")) {
+                if (body != null && (body.contains("現在のご予約状況") || body.contains("予約メニュー") || body.contains("ID:"))) {
                     Log.d("ClinicRepository", "Login successful")
                     Result.success(true)
+                } else if (body != null && body.contains("通信できません")) {
+                    Log.e("ClinicRepository", "Login failed: Communication error")
+                    Result.failure(Exception("通信エラーが発生しました。しばらくしてから再試行してください。"))
                 } else {
                     Log.e("ClinicRepository", "Login failed: Invalid response")
-                    Result.failure(Exception("Invalid login response"))
+                    Result.failure(Exception("ログインに失敗しました。IDとパスワードを確認してください。"))
                 }
             } else {
                 Log.e("ClinicRepository", "Login failed: ${response.code}")
@@ -73,7 +82,7 @@ class ClinicRepository {
         try {
             // First, get the main page to check reservation status
             val mainRequest = Request.Builder()
-                .url("$baseUrl?vMode=mode_bookConf&Stamp=154822")
+                .url("https://ssc10.doctorqube.com/miyatanaika-clinic/dqw.cgi?vMode=mode_menu&ssc=788433556&Stamp=2414")
                 .get()
                 .build()
 
